@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.txc.mybatis.mapper.StudentMapper">
+    <!--
+      功能：查询所有学生信息
+      id:是Statement的名称
+      resultType：传入参数类型
+    -->
+    <select id="findAll"  resultType="com.txc.mybatis.bean.Student">
+        select * from student
+    </select>
+    <!--
+    功能：根据id查询学生信息
+    parameterType：传入参数类型
+    -->
+    <select id="findStudentById" parameterType="string" resultType="com.txc.mybatis.bean.Student">
+        select * from student where stu_id=#{id}
+    </select>
+
+    <!--添加学生信息-->
+    <insert id="addStudent" parameterType="com.txc.mybatis.bean.Student">
+        insert into student(stu_id,stu_name,stu_sex,stu_age,stu_addr,stu_pwd)
+        value(#{stu_id},#{stu_name},#{stu_sex},#{stu_age},#{stu_addr},#{stu_pwd})
+    </insert>
+
+    <!--通过id修改学生信息-->
+    <update id="updStudentById" parameterType="com.txc.mybatis.bean.Student">
+       update student stu stu_name=#{stu_name},stu_sex=#{stu_sex}
+       where stu_id=#{stu_id}
+    </update>
+
+    <!--通过id删除学生信息-->
+    <delete id="deleteStuentById" parameterType="string">
+       delete from student where stu_id=#{stu_id}
+    </delete>
+
+
+
+</mapper>
