@@ -1,7 +1,7 @@
 package com.txc.mybatis.controller;
 
 import com.txc.mybatis.bean.Student;
-import com.txc.mybatis.service.JedisUtil;
+import com.txc.mybatis.util.JedisUtil;
 import com.txc.mybatis.service.RegisterMessageService;
 import com.txc.mybatis.service.StudentService;
 import org.springframework.beans.factory.annotation.Autowired;

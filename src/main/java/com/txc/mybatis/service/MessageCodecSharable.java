@@ -1,20 +1,16 @@
 package com.txc.mybatis.service;
 
-import cn.hutool.core.util.HexUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.txc.mybatis.bean.RegisterMessage;
+import com.txc.mybatis.util.CRCUtil;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.handler.codec.MessageToMessageCodec;
-import io.netty.util.CharsetUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
-import javax.annotation.Resource;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -141,32 +137,33 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         int i1 = in.readMedium();
         short dataLength = in.readShortLE();
 
-        //把帧头整体读一遍
-        in.readerIndex(0);
-        byte[] bytes0 = new byte[20];
-        in.readBytes(bytes0, 0, 20);
-        log.info("加载客户端报文,消息帧头:{}", bytes0);
-        //读消息域
-        byte[] bytes = new byte[dataLength];
-        in.readBytes(bytes, 0, dataLength);
-        log.info("加载客户端报文,消息内容:{}", bytes);
-        //读校验位
-        short checksum = in.readShortLE();
-
-        //把帧头和消息域拼一块
-        byte[] allBytes = Arrays.copyOf(bytes0, bytes0.length + bytes.length);
-        System.arraycopy(bytes, 0, allBytes, bytes0.length, bytes.length);
-
-        //整体报文(除校验位)
-        String allHexString = ConvertCode.bytesToHexString(allBytes);
-        //帧头
-        String hexString0 = ConvertCode.bytesToHexString(bytes0);
-        //消息域
-        String hexString = ConvertCode.bytesToHexString(bytes);
+//        //把帧头整体读一遍
+//        in.readerIndex(0);
+//        byte[] bytes0 = new byte[20];
+//        in.readBytes(bytes0, 0, 20);
+//        log.info("加载客户端报文,消息帧头:{}", bytes0);
+//        //读消息域
+//        byte[] bytes = new byte[dataLength];
+//        ByteBuf codeBuf = in.readBytes(bytes, 0, dataLength);
+//
+//        log.info("加载客户端报文,消息内容:{}", bytes);
+//        //读校验位
+//        short checksum = in.readShortLE();
+//
+//        //把帧头和消息域拼一块
+//        byte[] allBytes = Arrays.copyOf(bytes0, bytes0.length + bytes.length);
+//        System.arraycopy(bytes, 0, allBytes, bytes0.length, bytes.length);
+//
+//        //整体报文(除校验位)
+//        String allHexString = ConvertCode.bytesToHexString(allBytes);
+//        //帧头
+//        String hexString0 = ConvertCode.bytesToHexString(bytes0);
+//        //消息域
+//        String hexString = ConvertCode.bytesToHexString(bytes);
 
         Message message = null;
         //判断到底给什么子类
-        message = new RegisterRequestMessage(hexString);
+        message = new RegisterRequestMessage();
         message.setIdentify(identify);
         message.setCommVersion(commVersion);
         message.setEncryModel(encryModel);
@@ -175,27 +172,41 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         message.setDevAddr(devAddr);
         message.setMessageTime("230708233800");
         message.setDataLength(dataLength);
-        message.setCode(hexString);
-        message.setChecksum(checksum);
+//        message.setCode(hexString);
+//        message.setChecksum(checksum);
         //out.add(identify+","+commVersion+","+encryModel+","+messageType+","+vendorld+","+devAddr+","+"230708233800,"+dataLength+","+hexString);
-        out.add(message);
 
-        List<RegisterMessage> list = registerMessageService.list(new QueryWrapper<RegisterMessage>().lambda().eq(RegisterMessage::getDevAddr, message.getDevAddr()));
-        if (CollectionUtils.isEmpty(list)) {
-            RegisterMessage registerMessage = new RegisterMessage();
-            registerMessage.setStatus(1);
-            registerMessage.setChannelId(ctx.channel().id().toString());
-            registerMessage.setDevAddr(message.getDevAddr());
-            registerMessageService.save(registerMessage);
+        if (message.getMessageType() == 101) {
+            List<RegisterMessage> list = registerMessageService.list(new QueryWrapper<RegisterMessage>().lambda().eq(RegisterMessage::getDevAddr, message.getDevAddr()));
+            if (CollectionUtils.isEmpty(list)) {
+                RegisterMessage registerMessage = new RegisterMessage();
+                registerMessage.setStatus(1);
+                registerMessage.setChannelId(ctx.channel().id().toString());
+                registerMessage.setDevAddr(message.getDevAddr());
+                registerMessageService.save(registerMessage);
 
 
-        } else {
-            RegisterMessage registerMessage = list.stream().findFirst().orElse(null);
-            registerMessage.setChannelId(ctx.channel().id().toString());
-            registerMessage.setStatus(1);
-            registerMessageService.updateById(registerMessage);
+            } else {
+                RegisterMessage registerMessage = list.stream().findFirst().orElse(null);
+                registerMessage.setChannelId(ctx.channel().id().toString());
+                registerMessage.setStatus(1);
+                registerMessageService.updateById(registerMessage);
+            }
+        } else if (message.getMessageType() == 307) {
+            byte b = in.readByte();
+            for (byte i2 = 1; i2 <= b; i2++) {
+                byte status = in.readByte();
+                short i3 = in.readShortLE();
+                short i4 = in.readShortLE();
+                short i5 = in.readShortLE();
+                System.out.println("状态：" + status + "第一个" + i3 + "第二个" + i4 + "第三个" + i5);
+            }
+
+
         }
 
+
+        out.add(message);
     }
 
 

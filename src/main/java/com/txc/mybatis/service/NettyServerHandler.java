@@ -154,7 +154,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
         IdleStateEvent event = (IdleStateEvent) evt;
         // 触发了读空闲事件
         if (event.state() == IdleState.READER_IDLE) {
-           log.info("已经五秒没有发消息了");
+//           log.info("已经五秒没有发消息了");
             List<RegisterMessage> list = registerMessageService.list(new QueryWrapper<RegisterMessage>().lambda()
                     .eq(RegisterMessage::getChannelId, ctx.channel().id().toString())
                     .eq(RegisterMessage::getStatus, 1)

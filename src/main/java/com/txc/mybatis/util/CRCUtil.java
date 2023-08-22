@@ -1,4 +1,4 @@
-package com.txc.mybatis.service;
+package com.txc.mybatis.util;
 
 import io.netty.buffer.ByteBuf;
 

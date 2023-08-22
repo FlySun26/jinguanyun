@@ -1,4 +1,4 @@
-package com.txc.mybatis.service;
+package com.txc.mybatis.util;
 
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Component;
