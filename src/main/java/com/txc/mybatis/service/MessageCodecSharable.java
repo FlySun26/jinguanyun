@@ -3,6 +3,7 @@ package com.txc.mybatis.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.txc.mybatis.bean.RegisterMessage;
 import com.txc.mybatis.util.CRCUtil;
+import com.txc.mybatis.util.MyInterfaceBuilder;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
@@ -11,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.Arrays;
@@ -24,13 +26,6 @@ import java.util.List;
 @Component
 public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message> {
 
-
-
-    private RegisterMessageService registerMessageService;
-
-    public MessageCodecSharable(RegisterMessageService registerMessageService) {
-        this.registerMessageService = registerMessageService;
-    }
 
 
     @Override
@@ -55,55 +50,18 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         out.writeShortLE(msg.getCommVersion());
         //加密方式
         out.writeByte(msg.getEncryModel());
-        //报文标识
-        out.writeShortLE(102);
-        //厂商标识
-        out.writeByte(msg.getVendorld());
-        //充电设备编号
-        out.writeIntLE(msg.getDevAddr());
-        //时间戳（BCD码）
-        LocalDateTime now = LocalDateTime.now();
-        int year = now.getYear();
-        int month = now.getMonthValue();
-        int day = now.getDayOfMonth();
-        int hour = now.getHour();
-        int minute = now.getMinute();
-        int second = now.getSecond();
 
-        out.writeByte(Integer.parseInt(year + "", 16));
-        out.writeByte(Integer.parseInt(month + "", 16));
-        out.writeByte(Integer.parseInt(day + "", 16));
-        out.writeByte(Integer.parseInt(hour + "", 16));
-        out.writeByte(Integer.parseInt(minute + "", 16));
-        out.writeByte(Integer.parseInt(second + "", 16));
-
-        //消息体长度
-        out.writeShortLE(56);
-
-        out.writeShortLE(0);
-
-        out.writeByte(Integer.parseInt(year + "", 16));
-        out.writeByte(Integer.parseInt(month + "", 16));
-        out.writeByte(Integer.parseInt(day + "", 16));
-        out.writeByte(Integer.parseInt(hour + "", 16));
-        out.writeByte(Integer.parseInt(minute + "", 16));
-        out.writeByte(Integer.parseInt(second + "", 16));
-        byte[] bytes = "http://wx.nyjinguan.com/app/download?code=".getBytes(StandardCharsets.UTF_8);
-        out.writeBytes(bytes);
-        out.writeShortLE(0);
-        out.writeIntLE(0);
-
-//        //获取内容的字节数组
-//        String code = msg.getCode();
-//        byte[] bytes = ConvertCode.hexString2Bytes(code);
-        //byte[] bytes = Config.getSerializerAlgorithm().serialize(msg);
-        //写入内容
-//        out.writeBytes(bytes);
-        String crc = CRCUtil.getCRC(CRCUtil.convertByteBufToString(out));
+        MyInterface myInterface = MyInterfaceBuilder.getMyInterface(String.valueOf(msg.getMessageType()));
+        myInterface.encode(out,msg,outList);
+        String crc = null;
+        try {
+            crc = CRCUtil.getCRC(CRCUtil.convertByteBufToString(out));
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
         //校验位
         int i = Integer.parseInt(crc, 16);
         out.writeShort(i);
-
         outList.add(out);
 
     }
@@ -126,6 +84,7 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         if (!CRCUtil.crcCheck(in)) {
             return;
         }
+
         int identify = in.readShort();
         short commVersion = in.readShortLE();
         byte encryModel = in.readByte();
@@ -172,40 +131,8 @@ public class MessageCodecSharable extends MessageToMessageCodec<ByteBuf, Message
         message.setDevAddr(devAddr);
         message.setMessageTime("230708233800");
         message.setDataLength(dataLength);
-//        message.setCode(hexString);
-//        message.setChecksum(checksum);
-        //out.add(identify+","+commVersion+","+encryModel+","+messageType+","+vendorld+","+devAddr+","+"230708233800,"+dataLength+","+hexString);
-
-        if (message.getMessageType() == 101) {
-            List<RegisterMessage> list = registerMessageService.list(new QueryWrapper<RegisterMessage>().lambda().eq(RegisterMessage::getDevAddr, message.getDevAddr()));
-            if (CollectionUtils.isEmpty(list)) {
-                RegisterMessage registerMessage = new RegisterMessage();
-                registerMessage.setStatus(1);
-                registerMessage.setChannelId(ctx.channel().id().toString());
-                registerMessage.setDevAddr(message.getDevAddr());
-                registerMessageService.save(registerMessage);
-
-
-            } else {
-                RegisterMessage registerMessage = list.stream().findFirst().orElse(null);
-                registerMessage.setChannelId(ctx.channel().id().toString());
-                registerMessage.setStatus(1);
-                registerMessageService.updateById(registerMessage);
-            }
-        } else if (message.getMessageType() == 307) {
-            byte b = in.readByte();
-            for (byte i2 = 1; i2 <= b; i2++) {
-                byte status = in.readByte();
-                short i3 = in.readShortLE();
-                short i4 = in.readShortLE();
-                short i5 = in.readShortLE();
-                System.out.println("状态：" + status + "第一个" + i3 + "第二个" + i4 + "第三个" + i5);
-            }
-
-
-        }
-
-
+        MyInterface myInterface = MyInterfaceBuilder.getMyInterface(String.valueOf(messageType));
+        myInterface.decode(ctx, message, in, out);
         out.add(message);
     }
 

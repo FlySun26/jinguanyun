@@ -13,10 +13,12 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.List;
+import java.util.logging.SocketHandler;
 
 /**
  * @ClassName NettyServerHandler
@@ -30,10 +32,16 @@ public class NettyServerHandler extends ChannelDuplexHandler {
 
 
 
+
+
+    @Resource
     private RegisterMessageService registerMessageService;
 
-    public NettyServerHandler(RegisterMessageService registerMessageService) {
-        this.registerMessageService = registerMessageService;
+    private static RegisterMessageService registerMessageServiceStatic;
+
+    @PostConstruct
+    public void init() {
+        registerMessageServiceStatic = registerMessageService;
     }
 
     /**
@@ -155,16 +163,16 @@ public class NettyServerHandler extends ChannelDuplexHandler {
         // 触发了读空闲事件
         if (event.state() == IdleState.READER_IDLE) {
 //           log.info("已经五秒没有发消息了");
-            List<RegisterMessage> list = registerMessageService.list(new QueryWrapper<RegisterMessage>().lambda()
+            List<RegisterMessage> list = registerMessageServiceStatic.list(new QueryWrapper<RegisterMessage>().lambda()
                     .eq(RegisterMessage::getChannelId, ctx.channel().id().toString())
                     .eq(RegisterMessage::getStatus, 1)
             );
             if (!CollectionUtils.isEmpty(list)) {
                 RegisterMessage registerMessage = list.stream().findFirst().orElse(null);
                 registerMessage.setStatus(0);
-                registerMessageService.updateById(registerMessage);
+                registerMessageServiceStatic.updateById(registerMessage);
             }
-            //ctx.channel().close();
+            ctx.channel().close();
         }
 
     }

@@ -6,7 +6,7 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
-@MapperScan(basePackages = "com.txc")
+@MapperScan(basePackages = "com.txc.mybatis.mapper")
 public class SpringbootmybatisApplication {
 
     public static void main(String[] args) {

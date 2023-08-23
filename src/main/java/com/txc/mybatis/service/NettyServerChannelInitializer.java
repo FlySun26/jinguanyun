@@ -13,6 +13,7 @@ import io.netty.handler.timeout.IdleState;
 import io.netty.handler.timeout.IdleStateEvent;
 import io.netty.handler.timeout.IdleStateHandler;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.net.InetSocketAddress;
@@ -28,11 +29,12 @@ import java.util.concurrent.TimeUnit;
 @Slf4j
 public class NettyServerChannelInitializer extends ChannelInitializer<SocketChannel> {
 
-    public RegisterMessageService registerMessageService;
 
-    public NettyServerChannelInitializer(RegisterMessageService registerMessageService) {
-        this.registerMessageService = registerMessageService;
-    }
+//    private RegisterMessageService registerMessageService;
+//
+//    public NettyServerChannelInitializer(RegisterMessageService registerMessageService) {
+//        this.registerMessageService = registerMessageService;
+//    }
 
     @Override
     protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -40,9 +42,9 @@ public class NettyServerChannelInitializer extends ChannelInitializer<SocketChan
         //接收消息格式,使用自定义解析数据格式
         //pipeline.addLast("decoder",new MyDecoder());
         pipeline.addLast(new ProcotolFrameDecoder());
-        pipeline.addLast(new MessageCodecSharable(registerMessageService));
+        pipeline.addLast(new MessageCodecSharable());
 
-        pipeline.addLast(new IdleStateHandler(5, 0, 0));
+        pipeline.addLast(new IdleStateHandler(30, 0, 0));
         //发送消息格式，使用自定义解析数据格式
         pipeline.addLast("encoder",new MyEncoder());
 
@@ -50,7 +52,7 @@ public class NettyServerChannelInitializer extends ChannelInitializer<SocketChan
         //如果是读空闲或者写空闲，不处理,这里根据自己业务考虑使用
         //pipeline.addLast(new IdleStateHandler(2,0,0, TimeUnit.SECONDS));
         //自定义的空闲检测
-        pipeline.addLast(new NettyServerHandler(registerMessageService));
+        pipeline.addLast(new NettyServerHandler());
 
     }
 }

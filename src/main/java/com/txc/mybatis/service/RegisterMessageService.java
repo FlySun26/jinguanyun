@@ -20,13 +20,4 @@ import java.util.List;
 public class RegisterMessageService extends ServiceImpl<RegisterMessageMapper, RegisterMessage> {
 
 
-    public void encode(ByteBuf out, Message msg, List<Object> outList) {
-
-    }
-
-    public void decode(ByteBuf out, Message msg, List<Object> outList) {
-
-    }
-
-
 }

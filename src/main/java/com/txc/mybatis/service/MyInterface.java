@@ -10,5 +10,9 @@ public interface MyInterface {
 
     public void encode(ByteBuf out, Message msg, List<Object> outList);
 
-    public void decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out);
+//    public Message decode(ChannelHandlerContext ctx, ByteBuf in, List<Object> out);
+
+//    Message decode(Message message, ByteBuf in, List<Object> out);
+
+    Message decode(ChannelHandlerContext ctx, Message message, ByteBuf in, List<Object> out) throws Exception;
 }
