@@ -172,7 +172,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
                 registerMessage.setStatus(0);
                 registerMessageServiceStatic.updateById(registerMessage);
             }
-            ctx.channel().close();
+//            ctx.channel().close();
         }
 
     }

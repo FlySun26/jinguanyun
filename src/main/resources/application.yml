@@ -10,7 +10,7 @@ spring:
     password: 19951226fly
     virtual-host: jinguanyun
   redis:
-    host: 182.92.209.153
+    host: 172.17.0.3
     port: 6379
 
 socket:

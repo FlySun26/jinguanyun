@@ -89,7 +89,7 @@ public class HeartbeatBufferImpl implements MyInterface{
             }
         }
         heartbeat.setSpearParamList(list);
-        JedisUtil.set("heartbuff:spearstatus:" + message.getDevAddr(), JSON.toJSONString(heartbeat));
+//        JedisUtil.set("heartbuff:spearstatus:" + message.getDevAddr(), JSON.toJSONString(heartbeat));
         return message;
     }
 
