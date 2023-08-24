@@ -7,6 +7,7 @@ import com.txc.mybatis.util.CRCUtil;
 import com.txc.mybatis.util.JedisUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -27,6 +28,11 @@ import java.util.List;
 public class HeartbeatBufferImpl implements MyInterface{
 
     @Resource
+    private RedisTemplate redisTemplate;
+
+    public static RedisTemplate redisTemplateStatic;
+
+    @Resource
     private ErrorSpearService errorSpearService;
 
     public static ErrorSpearService errorSpearServiceStatic;
@@ -34,6 +40,7 @@ public class HeartbeatBufferImpl implements MyInterface{
     @PostConstruct
     public void init() {
         errorSpearServiceStatic = errorSpearService;
+        redisTemplateStatic = redisTemplate;
     }
     @Override
     public void encode(ByteBuf out, Message msg, List<Object> outList) {
@@ -89,7 +96,10 @@ public class HeartbeatBufferImpl implements MyInterface{
             }
         }
         heartbeat.setSpearParamList(list);
-//        JedisUtil.set("heartbuff:spearstatus:" + message.getDevAddr(), JSON.toJSONString(heartbeat));
+
+        redisTemplateStatic.opsForValue()
+                .set("heartbuff:spearstatus:" + message.getDevAddr(), JSON.toJSONString(heartbeat));
+        //JedisUtil.set("heartbuff:spearstatus:" + message.getDevAddr(), JSON.toJSONString(heartbeat));
         return message;
     }
 

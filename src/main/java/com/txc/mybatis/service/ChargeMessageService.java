@@ -7,8 +7,11 @@ import com.txc.mybatis.util.CRCUtil;
 import com.txc.mybatis.util.JedisUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -19,6 +22,17 @@ import java.util.List;
  **/
 @Service
 public class ChargeMessageService implements MyInterface{
+
+    @Resource
+    private RedisTemplate redisTemplate;
+
+    public static RedisTemplate redisTemplateStatic;
+
+    @PostConstruct
+    public void init() {
+
+        redisTemplateStatic = redisTemplate;
+    }
     @Override
     public void encode(ByteBuf out, Message msg, List<Object> outList) {
 
@@ -78,7 +92,8 @@ public class ChargeMessageService implements MyInterface{
         chargeMessage.setMaxTemperature((int) maxTemperature);
         chargeMessage.setMinTemperature((int) minTemperature);
         chargeMessage.setSOC((int) SOC);
-        JedisUtil.set("chargemessage:" + message.getDevAddr() + ":" + num, JSON.toJSONString(chargeMessage));
+        redisTemplateStatic.opsForValue().set("chargemessage:" + message.getDevAddr() + ":" + num, JSON.toJSONString(chargeMessage));
+        //JedisUtil.set("chargemessage:" + message.getDevAddr() + ":" + num, JSON.toJSONString(chargeMessage));
         return message;
     }
 }
