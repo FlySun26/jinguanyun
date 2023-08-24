@@ -24,7 +24,9 @@ public class ErrorSpearService extends ServiceImpl<ErrorSpearMapper, ErrorSpear>
     public void saveErrorCode(int devAddr, SpearParam spearParam, byte i2) {
         List<ErrorSpear> list = this.list(new QueryWrapper<ErrorSpear>().lambda()
                 .eq(ErrorSpear::getDevAddr, devAddr)
-                .eq(ErrorSpear::getSpearCode, (int) i2));
+                .eq(ErrorSpear::getSpearCode, (int) i2)
+                .eq(ErrorSpear::getErrorCode, spearParam.getParam1())
+        );
         if (CollectionUtils.isEmpty(list)) {
             ErrorSpear errorSpear = new ErrorSpear();
             errorSpear.setDevAddr(devAddr);
