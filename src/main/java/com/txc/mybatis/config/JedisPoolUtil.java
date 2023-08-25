@@ -18,7 +18,7 @@ import java.util.Properties;
 @Component
 public class JedisPoolUtil {
 
-    private static final String PROPERTIES_PATH = "src/main/resources/redis.properties";
+    private static final String PROPERTIES_PATH = "redis.properties";
     private static JedisPool jedisPool;
 
     static {
