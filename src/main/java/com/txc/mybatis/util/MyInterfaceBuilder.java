@@ -2,6 +2,7 @@ package com.txc.mybatis.util;
 
 import com.txc.mybatis.service.ChargeMessageService;
 import com.txc.mybatis.service.HeartbeatBufferImpl;
+import com.txc.mybatis.service.HostStatusMessageBufferService;
 import com.txc.mybatis.service.MyInterface;
 import com.txc.mybatis.service.RegisterBufferImpl;
 
@@ -19,6 +20,7 @@ public class MyInterfaceBuilder {
         myInterfacePool.put("101", new RegisterBufferImpl());
         myInterfacePool.put("307", new HeartbeatBufferImpl());
         myInterfacePool.put("304", new ChargeMessageService());
+        myInterfacePool.put("305", new HostStatusMessageBufferService());
     }
 
     /**

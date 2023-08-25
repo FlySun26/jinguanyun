@@ -45,14 +45,6 @@ public class HeartbeatBufferImpl implements MyInterface{
     @Override
     public void encode(ByteBuf out, Message msg, List<Object> outList) {
 
-        //报文标识
-        out.writeShortLE(308);
-        //厂商标识
-        out.writeByte(msg.getVendorld());
-        //充电设备编号
-        out.writeIntLE(msg.getDevAddr());
-        out.writeShortLE(0);
-        //时间戳（BCD码）
         LocalDateTime now = LocalDateTime.now();
         int year = now.getYear();
         int month = now.getMonthValue();
@@ -60,6 +52,28 @@ public class HeartbeatBufferImpl implements MyInterface{
         int hour = now.getHour();
         int minute = now.getMinute();
         int second = now.getSecond();
+
+        //报文标识
+        out.writeShortLE(308);
+        //厂商标识
+        out.writeByte(msg.getVendorld());
+
+
+
+        //充电设备编号
+        out.writeIntLE(msg.getDevAddr());
+
+        out.writeByte(Integer.parseInt(year + "", 16));
+        out.writeByte(Integer.parseInt(month + "", 16));
+        out.writeByte(Integer.parseInt(day + "", 16));
+        out.writeByte(Integer.parseInt(hour + "", 16));
+        out.writeByte(Integer.parseInt(minute + "", 16));
+        out.writeByte(Integer.parseInt(second + "", 16));
+
+        out.writeShortLE(8);
+        out.writeShortLE(0);
+        //时间戳（BCD码）
+
 
         out.writeByte(Integer.parseInt(year + "", 16));
         out.writeByte(Integer.parseInt(month + "", 16));

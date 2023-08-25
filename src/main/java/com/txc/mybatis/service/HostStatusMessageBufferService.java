@@ -1,9 +1,15 @@
 package com.txc.mybatis.service;
 
+import com.alibaba.fastjson.JSON;
 import com.txc.mybatis.bean.HostStatusMessage;
+import com.txc.mybatis.util.JedisUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.stereotype.Service;
 
+import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import java.util.List;
 
 /**
@@ -12,8 +18,28 @@ import java.util.List;
  * @Date 2023/8/24 10:15
  * @Vertion 1.0
  **/
-public class HostStatusMessageBufferService implements MyInterface{
+@Service
+public class HostStatusMessageBufferService implements MyInterface {
+
+
+    @Resource
+    private RedisTemplate redisTemplate;
+
+    public static RedisTemplate redisTemplateStatic;
+
+    @Resource
+    private ErrorSpearService errorSpearService;
+
+    public static ErrorSpearService errorSpearServiceStatic;
+
+    @PostConstruct
+    public void init() {
+        errorSpearServiceStatic = errorSpearService;
+        redisTemplateStatic = redisTemplate;
+    }
+
     @Override
+
     public void encode(ByteBuf out, Message msg, List<Object> outList) {
 
     }
@@ -25,7 +51,6 @@ public class HostStatusMessageBufferService implements MyInterface{
         short hostInletTemperature = in.readShortLE();
         //主机出风温度
         short hostOutletTemperature = in.readShortLE();
-
 
 
         //模块1状态
@@ -70,9 +95,41 @@ public class HostStatusMessageBufferService implements MyInterface{
         short model10Temperature = in.readShortLE();
 
         HostStatusMessage hostStatusMessage = new HostStatusMessage();
+        hostStatusMessage.setHostInletTemperature(hostInletTemperature);
+        hostStatusMessage.setHostOutletTemperature(hostOutletTemperature);
+
         hostStatusMessage.setModel1Status(model1Status);
         hostStatusMessage.setModel1Temperature(model1Temperature);
-        return null;
+        hostStatusMessage.setModel2Status(model2Status);
+        hostStatusMessage.setModel2Temperature(model2Temperature);
+        hostStatusMessage.setModel3Status(model3Status);
+        hostStatusMessage.setModel3Temperature(model3Temperature);
+        hostStatusMessage.setModel4Status(model4Status);
+        hostStatusMessage.setModel4Temperature(model4Temperature);
+        hostStatusMessage.setModel5Status(model5Status);
+        hostStatusMessage.setModel5Temperature(model5Temperature);
+        hostStatusMessage.setModel6Status(model6Status);
+        hostStatusMessage.setModel6Temperature(model6Temperature);
+        hostStatusMessage.setModel7Status(model7Status);
+        hostStatusMessage.setModel7Temperature(model7Temperature);
+        hostStatusMessage.setModel8Status(model8Status);
+        hostStatusMessage.setModel8Temperature(model8Temperature);
+        hostStatusMessage.setModel9Status(model9Status);
+        hostStatusMessage.setModel9Temperature(model9Temperature);
+        hostStatusMessage.setModel10Status(model10Status);
+        hostStatusMessage.setModel10Temperature(model10Temperature);
+
+
+        JedisUtil.set("hostStatusMessage:" + message.getDevAddr(), JSON.toJSONString(hostStatusMessage));
+
+        return message;
+    }
+
+    public static void main(String[] args) {
+        for (int i = 1; i <= 10; i++) {
+            System.out.println("hostStatusMessage.setModel" + i + "Status(model"+i+"Status);");
+            System.out.println("hostStatusMessage.setModel" + i + "Temperature(model" + i + "Temperature);");
+        }
     }
 
 
