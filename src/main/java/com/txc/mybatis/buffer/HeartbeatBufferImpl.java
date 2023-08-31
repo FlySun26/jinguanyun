@@ -1,8 +1,11 @@
-package com.txc.mybatis.service;
+package com.txc.mybatis.buffer;
 
 import com.alibaba.fastjson.JSON;
 import com.txc.mybatis.bean.Heartbeat;
 import com.txc.mybatis.bean.SpearParam;
+import com.txc.mybatis.service.ErrorSpearService;
+import com.txc.mybatis.service.Message;
+import com.txc.mybatis.service.MyInterface;
 import com.txc.mybatis.util.CRCUtil;
 import com.txc.mybatis.util.JedisUtil;
 import io.netty.buffer.ByteBuf;
@@ -25,7 +28,7 @@ import java.util.List;
  * @Vertion 1.0
  **/
 @Service
-public class HeartbeatBufferImpl implements MyInterface{
+public class HeartbeatBufferImpl implements MyInterface {
 
     @Resource
     private RedisTemplate redisTemplate;
@@ -111,9 +114,7 @@ public class HeartbeatBufferImpl implements MyInterface{
         }
         heartbeat.setSpearParamList(list);
 
-        redisTemplateStatic.opsForValue()
-                .set("heartbuff:spearstatus:" + message.getDevAddr(), JSON.toJSONString(heartbeat));
-        //JedisUtil.set("heartbuff:spearstatus:" + message.getDevAddr(), JSON.toJSONString(heartbeat));
+        JedisUtil.set("heartbuff:spearstatus:" + message.getDevAddr(), JSON.toJSONString(heartbeat));
         return message;
     }
 

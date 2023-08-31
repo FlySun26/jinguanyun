@@ -1,8 +1,10 @@
-package com.txc.mybatis.service;
+package com.txc.mybatis.buffer;
 
 import cn.hutool.extra.template.Template;
 import com.alibaba.fastjson.JSON;
 import com.txc.mybatis.bean.ChargeMessage;
+import com.txc.mybatis.service.Message;
+import com.txc.mybatis.service.MyInterface;
 import com.txc.mybatis.util.CRCUtil;
 import com.txc.mybatis.util.JedisUtil;
 import io.netty.buffer.ByteBuf;
@@ -21,7 +23,7 @@ import java.util.List;
  * @Vertion 1.0
  **/
 @Service
-public class ChargeMessageService implements MyInterface{
+public class ChargeMessageService implements MyInterface {
 
     @Resource
     private RedisTemplate redisTemplate;

@@ -62,7 +62,7 @@ public class JedisPoolUtil {
         boolean isSetDefault = true;
 
         if (isSetDefault) {
-            jedisPool = new JedisPool(new GenericObjectPoolConfig(), host, port, poolTimeOut);
+            jedisPool = new JedisPool(new GenericObjectPoolConfig(), host, port, poolTimeOut, "19951226fly");
         }
 
     }

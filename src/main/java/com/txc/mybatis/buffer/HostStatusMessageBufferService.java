@@ -1,7 +1,10 @@
-package com.txc.mybatis.service;
+package com.txc.mybatis.buffer;
 
 import com.alibaba.fastjson.JSON;
 import com.txc.mybatis.bean.HostStatusMessage;
+import com.txc.mybatis.service.ErrorSpearService;
+import com.txc.mybatis.service.Message;
+import com.txc.mybatis.service.MyInterface;
 import com.txc.mybatis.util.JedisUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
@@ -22,24 +25,8 @@ import java.util.List;
 public class HostStatusMessageBufferService implements MyInterface {
 
 
-    @Resource
-    private RedisTemplate redisTemplate;
-
-    public static RedisTemplate redisTemplateStatic;
-
-    @Resource
-    private ErrorSpearService errorSpearService;
-
-    public static ErrorSpearService errorSpearServiceStatic;
-
-    @PostConstruct
-    public void init() {
-        errorSpearServiceStatic = errorSpearService;
-        redisTemplateStatic = redisTemplate;
-    }
 
     @Override
-
     public void encode(ByteBuf out, Message msg, List<Object> outList) {
 
     }
@@ -123,13 +110,6 @@ public class HostStatusMessageBufferService implements MyInterface {
         JedisUtil.set("hostStatusMessage:" + message.getDevAddr(), JSON.toJSONString(hostStatusMessage));
 
         return message;
-    }
-
-    public static void main(String[] args) {
-        for (int i = 1; i <= 10; i++) {
-            System.out.println("hostStatusMessage.setModel" + i + "Status(model"+i+"Status);");
-            System.out.println("hostStatusMessage.setModel" + i + "Temperature(model" + i + "Temperature);");
-        }
     }
 
 

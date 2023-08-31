@@ -18,6 +18,7 @@ import javax.annotation.Resource;
 import java.net.InetSocketAddress;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.SocketHandler;
 
 /**
@@ -57,13 +58,14 @@ public class NettyServerHandler extends ChannelDuplexHandler {
         String clientIp = insocket.getAddress().getHostAddress();
         int clientPort = insocket.getPort();
         //获取连接通道唯一标识
-        ChannelId channelId = ctx.channel().id();
+        String channelId = ctx.channel().id().toString();
         //如果map中不包含此连接，就保存连接
         if (ChannelMap.getChannelMap().containsKey(channelId)) {
             log.info("客户端:{},是连接状态，连接通道数量:{} ",channelId,ChannelMap.getChannelMap().size());
         } else {
             //保存连接
-            ChannelMap.addChannel(channelId, ctx.channel());
+            ChannelMap.addChannel(channelId.toString(), ctx.channel());
+            ConcurrentHashMap<String, Channel> channelMap = ChannelMap.getChannelMap();
             log.info("客户端:{},连接netty服务器[IP:{}-->PORT:{}]",channelId, clientIp,clientPort);
             log.info("连接通道数量: {}",ChannelMap.getChannelMap().size());
         }
@@ -80,7 +82,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
     public void channelInactive(ChannelHandlerContext ctx) {
         InetSocketAddress inSocket = (InetSocketAddress) ctx.channel().remoteAddress();
         String clientIp = inSocket.getAddress().getHostAddress();
-        ChannelId channelId = ctx.channel().id();
+        String channelId = ctx.channel().id().toString();
         //包含此客户端才去删除
         if (ChannelMap.getChannelMap().containsKey(channelId)) {
             //删除连接
@@ -120,7 +122,7 @@ public class NettyServerHandler extends ChannelDuplexHandler {
      * @return void
      */
     public void channelWrite(ChannelId channelId, Object msg) throws Exception {
-        Channel channel = ChannelMap.getChannelMap().get(channelId);
+        Channel channel = ChannelMap.getChannelMap().get(channelId.toString());
         if (channel == null) {
             log.info("通道:{},不存在",channelId);
             return;

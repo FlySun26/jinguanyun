@@ -43,6 +43,10 @@ public abstract class Message implements Serializable {
     private String code;//16进制
     private int checksum;
 
+    private Object object;
+
+    private String channelId;
+
 
 //    public abstract int getMessageType();
 //

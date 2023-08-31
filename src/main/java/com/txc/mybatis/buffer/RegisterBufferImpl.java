@@ -1,8 +1,12 @@
-package com.txc.mybatis.service;
+package com.txc.mybatis.buffer;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.txc.mybatis.bean.ChargingStation;
 import com.txc.mybatis.bean.RegisterMessage;
+import com.txc.mybatis.service.ChargingStationService;
+import com.txc.mybatis.service.Message;
+import com.txc.mybatis.service.MyInterface;
+import com.txc.mybatis.service.RegisterMessageService;
 import com.txc.mybatis.util.CRCUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;

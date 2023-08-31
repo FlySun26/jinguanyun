@@ -1,10 +1,13 @@
 package com.txc.mybatis.util;
 
-import com.txc.mybatis.service.ChargeMessageService;
-import com.txc.mybatis.service.HeartbeatBufferImpl;
-import com.txc.mybatis.service.HostStatusMessageBufferService;
+import com.txc.mybatis.buffer.BMSStatusBufferImpl;
+import com.txc.mybatis.buffer.ChargeMessageService;
+import com.txc.mybatis.buffer.FailStartMessageService;
+import com.txc.mybatis.buffer.HeartbeatBufferImpl;
+import com.txc.mybatis.buffer.HostStatusMessageBufferService;
+import com.txc.mybatis.buffer.StartMessageResultService;
 import com.txc.mybatis.service.MyInterface;
-import com.txc.mybatis.service.RegisterBufferImpl;
+import com.txc.mybatis.buffer.RegisterBufferImpl;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -21,6 +24,9 @@ public class MyInterfaceBuilder {
         myInterfacePool.put("307", new HeartbeatBufferImpl());
         myInterfacePool.put("304", new ChargeMessageService());
         myInterfacePool.put("305", new HostStatusMessageBufferService());
+        myInterfacePool.put("301", new BMSStatusBufferImpl());
+        myInterfacePool.put("309", new FailStartMessageService());
+        myInterfacePool.put("502", new StartMessageResultService());
     }
 
     /**

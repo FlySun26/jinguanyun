@@ -1,14 +1,19 @@
 spring:
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
   datasource:
     url: jdbc:mysql://182.92.209.153:3306/jinguan
     driver-class-name: com.mysql.jdbc.Driver
     username: jinguan
     password: jinguan888
   rabbitmq:
-    host: 5672
+    host: 182.92.209.153
+    port: 5672
     username: flysun
     password: 19951226fly
     virtual-host: jinguanyun
+
   redis:
     host: 182.92.209.153
     port: 6379

@@ -17,16 +17,16 @@ public class ChannelMap {
     /**
      * 管理一个全局map，保存连接进服务端的通道数量
      */
-    private static final ConcurrentHashMap<ChannelId, Channel> CHANNEL_MAP = new ConcurrentHashMap<>(128);
+    private static final ConcurrentHashMap<String, Channel> CHANNEL_MAP = new ConcurrentHashMap<>(128);
 
-    public static ConcurrentHashMap<ChannelId, Channel> getChannelMap() {
+    public static ConcurrentHashMap<String, Channel> getChannelMap() {
         return CHANNEL_MAP;
     }
 
     /**
      *  获取指定name的channel
      */
-    public static Channel getChannelByName(ChannelId channelId){
+    public static Channel getChannelByName(String channelId){
         if(CollectionUtils.isEmpty(CHANNEL_MAP)){
             return null;
         }
@@ -40,7 +40,7 @@ public class ChannelMap {
         if(CollectionUtils.isEmpty(CHANNEL_MAP)){
             return false;
         }
-        for(ChannelId channelId: CHANNEL_MAP.keySet()) {
+        for(String channelId: CHANNEL_MAP.keySet()) {
             Channel channel = CHANNEL_MAP.get(channelId);
             channel.writeAndFlush(new TextWebSocketFrame(obj));
         }
@@ -50,7 +50,7 @@ public class ChannelMap {
     /**
      *  将channel和对应的name添加到ConcurrentHashMap
      */
-    public static void addChannel(ChannelId channelId,Channel channel){
+    public static void addChannel(String channelId,Channel channel){
         CHANNEL_MAP.put(channelId,channel);
     }
 
