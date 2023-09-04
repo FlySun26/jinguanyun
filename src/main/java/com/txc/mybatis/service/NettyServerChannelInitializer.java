@@ -42,11 +42,12 @@ public class NettyServerChannelInitializer extends ChannelInitializer<SocketChan
         //接收消息格式,使用自定义解析数据格式
         //pipeline.addLast("decoder",new MyDecoder());
         pipeline.addLast(new ProcotolFrameDecoder());
+        //发送消息格式，使用自定义解析数据格式
+//        pipeline.addLast(new MyEncoder());
         pipeline.addLast(new MessageCodecSharable());
 
         pipeline.addLast(new IdleStateHandler(30, 0, 0));
-        //发送消息格式，使用自定义解析数据格式
-        pipeline.addLast("encoder",new MyEncoder());
+
 
         //针对客户端，如果在1分钟时没有想服务端发送写心跳(ALL)，则主动断开
         //如果是读空闲或者写空闲，不处理,这里根据自己业务考虑使用

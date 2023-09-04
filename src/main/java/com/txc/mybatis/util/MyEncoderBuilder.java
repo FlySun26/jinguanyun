@@ -29,7 +29,7 @@ public class MyEncoderBuilder {
     private static Map<String, MyEncoderInterface> myEncoderInterfacePool = new ConcurrentHashMap<>();
     //先创建所有实现类的实例放进map中
     static {
-        myEncoderInterfacePool.put("501", new StartMessagePushService());
+//        myEncoderInterfacePool.put("501", new StartMessagePushService());
     }
 
     /**

@@ -5,20 +5,20 @@ import com.txc.mybatis.service.MyInterface;
 import com.txc.mybatis.util.CRCUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
+import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 /**
- * @ClassName SettingCurrentMessageResultService
+ * @ClassName RestartMessageResultService
  * @Description TODO
- * @Date 2023/8/31 14:12
+ * @Date 2023/9/1 15:12
  * @Vertion 1.0
  **/
-@Service
+@Data
 @Slf4j
-public class SettingCurrentMessageResultService implements MyInterface {
+public class RestartMessageResultService implements MyInterface {
     @Override
     public void encode(ByteBuf out, Message msg, List<Object> outList) {
 
@@ -26,10 +26,8 @@ public class SettingCurrentMessageResultService implements MyInterface {
 
     @Override
     public Message decode(ChannelHandlerContext ctx, Message message, ByteBuf in, List<Object> out) throws Exception {
-        byte spearNum = in.readByte();
         short result = in.readShortLE();
-        String transactionSerialNum = CRCUtil.convertByteBufToString(in.readBytes(8));
-        log.info("收到电流设置确认,桩号：{},枪编码：{},结果：{},交易流水号：{}", message.getDevAddr(), spearNum, result, transactionSerialNum);
+        log.info("收到重启确认,桩号：{},枪编码：{},结果：{}", message.getDevAddr(), result);
         return message;
     }
 }

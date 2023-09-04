@@ -1,8 +1,11 @@
 package com.txc.mybatis.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.txc.mybatis.bean.ChargingStation;
+import com.txc.mybatis.bean.RegisterMessage;
 import com.txc.mybatis.service.ChannelMap;
 import com.txc.mybatis.service.ChargingStationService;
+import com.txc.mybatis.service.RegisterMessageService;
 import com.txc.mybatis.service.RegisterRequestMessage;
 import io.netty.channel.Channel;
 import org.springframework.amqp.core.ExchangeTypes;
@@ -37,16 +40,19 @@ public class TestRabbitService {
 
     @Resource
     private ChargingStationService chargingStationService;
+    @Resource
+    private RegisterMessageService registerMessageService;
 
     // @RabbitHandler 代表此方法是一个消息接收的方法。该不要有返回值
     @RabbitHandler
     public void messagerevice(RegisterRequestMessage message) {
         // 此处省略发邮件的逻辑
         System.out.println("email-------------->" + message);
+        List<RegisterMessage> list1 = registerMessageService.list(new QueryWrapper<RegisterMessage>().lambda().eq(RegisterMessage::getDevAddr, message.getDevAddr()));
+        RegisterMessage registerMessage = list1.stream().findFirst().orElse(null);
+        message.setChannelId(registerMessage.getChannelId());
         Channel channel = ChannelMap.getChannelByName(message.getChannelId());
         channel.writeAndFlush(message);
-        List<ChargingStation> list = chargingStationService.list();
-        System.out.println(list);
     }
 
 

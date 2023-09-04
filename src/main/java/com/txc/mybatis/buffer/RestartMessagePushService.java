@@ -1,26 +1,24 @@
 package com.txc.mybatis.buffer;
 
-import com.txc.mybatis.bean.StartMessageCodeMessage;
+import com.txc.mybatis.bean.RestartMessageCode;
+import com.txc.mybatis.bean.SettingCurrentMessageCode;
 import com.txc.mybatis.service.Message;
-import com.txc.mybatis.service.MyEncoderInterface;
 import com.txc.mybatis.service.MyInterface;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Service;
 
-import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * @ClassName StartMessagePushService
+ * @ClassName RestartMessagePushService
  * @Description TODO
- * @Date 2023/8/28 11:47
+ * @Date 2023/9/1 11:01
  * @Vertion 1.0
  **/
 @Service
-public class StartMessagePushService implements MyInterface {
-
+public class RestartMessagePushService implements MyInterface {
     @Override
     public void encode(ByteBuf out, Message msg, List<Object> outList) {
         LocalDateTime now = LocalDateTime.now();
@@ -31,7 +29,7 @@ public class StartMessagePushService implements MyInterface {
         int minute = now.getMinute();
         int second = now.getSecond();
         //报文标识
-        out.writeShortLE(501);
+        out.writeShortLE(507);
         //厂商标识
         out.writeByte(msg.getVendorld());
         //充电设备编号
@@ -43,28 +41,15 @@ public class StartMessagePushService implements MyInterface {
         out.writeByte(Integer.parseInt(minute + "", 16));
         out.writeByte(Integer.parseInt(second + "", 16));
         //消息体长度
-        out.writeShortLE(22);
-        StartMessageCodeMessage codeMessage=new StartMessageCodeMessage();
+        out.writeShortLE(3);
+        RestartMessageCode codeMessage = new RestartMessageCode();
         try {
-            codeMessage = (StartMessageCodeMessage) msg.getObject();
+            codeMessage = (RestartMessageCode) msg.getObject();
         } catch (Exception e) {
             e.printStackTrace();
         }
-        out.writeByte(codeMessage.getSpearNum());
-        byte[] bytes = codeMessage.getTransactionSerialNum().getBytes(StandardCharsets.UTF_8);
-        out.writeBytes(bytes);
-        out.writeIntLE(codeMessage.getCardBalance());
-        out.writeByte(codeMessage.getStartType());
-        out.writeByte(codeMessage.getBMSVoltage());
-        out.writeByte(codeMessage.getSOCValue());
-        out.writeShortLE(codeMessage.getAmountValue());
-        out.writeBytes(bytes);
-        if (bytes.length < 8) {
-            for (int i = 0; i < 8 - bytes.length; i++) {
-                out.writeByte(0);
-            }
-        }
-//        outList.add(out);
+        out.writeByte(codeMessage.getRestartType());
+        out.writeShortLE(codeMessage.getPasswordParam());
     }
 
     @Override

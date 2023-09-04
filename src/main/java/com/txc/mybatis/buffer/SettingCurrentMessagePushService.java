@@ -4,12 +4,14 @@ import com.txc.mybatis.bean.SettingCurrentMessageCode;
 import com.txc.mybatis.bean.StartMessageCodeMessage;
 import com.txc.mybatis.service.Message;
 import com.txc.mybatis.service.MyEncoderInterface;
+import com.txc.mybatis.service.MyInterface;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.ChannelHandlerContext;
 import org.springframework.stereotype.Service;
 
 import java.nio.charset.StandardCharsets;
 import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  * @ClassName SettingCurrentMessagePushService
@@ -18,10 +20,10 @@ import java.time.LocalDateTime;
  * @Vertion 1.0
  **/
 @Service
-public class SettingCurrentMessagePushService implements MyEncoderInterface {
-    @Override
-    public void encode(ChannelHandlerContext channelHandlerContext, Message msg, ByteBuf out) {
+public class SettingCurrentMessagePushService implements MyInterface {
 
+    @Override
+    public void encode(ByteBuf out, Message msg, List<Object> outList) {
         LocalDateTime now = LocalDateTime.now();
         int year = now.getYear();
         int month = now.getMonthValue();
@@ -51,5 +53,10 @@ public class SettingCurrentMessagePushService implements MyEncoderInterface {
         }
         out.writeByte(codeMessage.getSpearNum());
         out.writeShortLE(codeMessage.getCurrentParam());
+    }
+
+    @Override
+    public Message decode(ChannelHandlerContext ctx, Message message, ByteBuf in, List<Object> out) throws Exception {
+        return null;
     }
 }

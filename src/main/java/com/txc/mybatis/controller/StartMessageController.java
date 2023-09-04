@@ -1,6 +1,7 @@
 package com.txc.mybatis.controller;
 
 import com.alibaba.fastjson.JSON;
+import com.txc.mybatis.bean.RestartMessageCode;
 import com.txc.mybatis.bean.SettingCurrentMessageCode;
 import com.txc.mybatis.bean.StartMessageCodeMessage;
 import com.txc.mybatis.buffer.HeartbeatBufferImpl;
@@ -85,6 +86,15 @@ public class StartMessageController {
     @ApiOperation(value = "设置电流消息下发")
     public String settingCurrent(@RequestBody RegisterRequestMessage message) {
         SettingCurrentMessageCode codeMessage = JSON.parseObject(JSON.toJSONString(message.getObject()), SettingCurrentMessageCode.class);
+        message.setObject(codeMessage);
+        rabbitTemplate.convertAndSend("jinguanyun","StartMessageRouting",message);
+        return "success";
+    }
+
+    @PostMapping(value = "/restartMessagePush")
+    @ApiOperation(value = "重启重新桩指令下发")
+    public String restartMessagePush(@RequestBody RegisterRequestMessage message) {
+        RestartMessageCode codeMessage = JSON.parseObject(JSON.toJSONString(message.getObject()), RestartMessageCode.class);
         message.setObject(codeMessage);
         rabbitTemplate.convertAndSend("jinguanyun","StartMessageRouting",message);
         return "success";

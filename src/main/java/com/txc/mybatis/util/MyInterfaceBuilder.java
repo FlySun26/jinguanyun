@@ -2,9 +2,14 @@ package com.txc.mybatis.util;
 
 import com.txc.mybatis.buffer.BMSStatusBufferImpl;
 import com.txc.mybatis.buffer.ChargeMessageService;
+import com.txc.mybatis.buffer.EndMessagePushService;
+import com.txc.mybatis.buffer.EndMessageResultService;
 import com.txc.mybatis.buffer.FailStartMessageService;
 import com.txc.mybatis.buffer.HeartbeatBufferImpl;
 import com.txc.mybatis.buffer.HostStatusMessageBufferService;
+import com.txc.mybatis.buffer.SettingCurrentMessagePushService;
+import com.txc.mybatis.buffer.SettingCurrentMessageResultService;
+import com.txc.mybatis.buffer.StartMessagePushService;
 import com.txc.mybatis.buffer.StartMessageResultService;
 import com.txc.mybatis.service.MyInterface;
 import com.txc.mybatis.buffer.RegisterBufferImpl;
@@ -26,7 +31,12 @@ public class MyInterfaceBuilder {
         myInterfacePool.put("305", new HostStatusMessageBufferService());
         myInterfacePool.put("301", new BMSStatusBufferImpl());
         myInterfacePool.put("309", new FailStartMessageService());
+        myInterfacePool.put("501", new StartMessagePushService());
         myInterfacePool.put("502", new StartMessageResultService());
+        myInterfacePool.put("503", new EndMessagePushService());
+        myInterfacePool.put("504", new EndMessageResultService());
+        myInterfacePool.put("505", new SettingCurrentMessagePushService());
+        myInterfacePool.put("506", new SettingCurrentMessageResultService());
     }
 
     /**
